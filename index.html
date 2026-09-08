@@ -245,6 +245,7 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    var name = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
 
     submitBtn.disabled = true;
@@ -263,7 +264,7 @@
     };
 
     var script = document.createElement('script');
-    script.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+    script.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) + '&callback=' + callbackName;
     script.onerror = function () {
       cleanup();
       statusEl.textContent = 'Something went wrong. Please try again.';
