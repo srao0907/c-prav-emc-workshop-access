@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Access Check</title>
+<style>
+  :root {
+    --ink: #1b1b1b;
+    --paper: #faf9f6;
+    --line: #d8d5cd;
+    --accent: #2f5d50;
+    --accent-hover: #24473d;
+    --error: #a3372f;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--line);
+    padding: 40px 36px;
+    background: #fff;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+  p.sub {
+    margin: 0 0 32px;
+    color: #55524a;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #444;
+  }
+  input[type="text"],
+  input[type="email"] {
+    width: 100%;
+    padding: 11px 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--paper);
+  }
+  input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled {
+    background: #a9a9a3;
+    cursor: not-allowed;
+  }
+  .status {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+  }
+  .status.error { color: var(--error); }
+  .download-btn {
+    padding: 12px;
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 2px;
+    font-size: 1rem;
+  }
+  .download-btn:hover { background: var(--accent-hover); }
+  #deniedMessage a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+  <div class="card" id="formCard">
+    <h1>Confirm your access</h1>
+    <p class="sub">Enter your name and email to continue.</p>
+
+    <form id="checkForm">
+      <label for="name">Name</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required>
+
+      <button type="submit" id="submitBtn">Continue</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <div class="card" id="approvedCard" style="display:none;">
+    <h1>You're all set</h1>
+    <p class="sub">Thanks for confirming — here are the workshop slides.</p>
+    <div id="downloadList"></div>
+  </div>
+
+  <div class="card" id="deniedCard" style="display:none;">
+    <h1>We couldn't find you on the list</h1>
+    <p class="sub" id="deniedMessage"></p>
+  </div>
+
+<script>
+  // ---- CONFIGURE THESE VALUES ----
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFJHsTWZ-IO5bm-uq-9fuYQyHv269-bu2DJP6CrFRaJXerT80w-5UgtFjxcSNxB4Yb/exec';
+
+  // Add one entry per PowerPoint file. label is what shows on the button.
+  var PPT_FILES = [
+    { label: 'Download Workshop Slides — Part 1', url: 'https://c-prav.com/wp-content/uploads/2026/07/India_Product-Design-EMC_Fest-Training_Speaker_Profiles_2026-U.pdf' },
+    { label: 'Download Workshop Slides — Part 2', url: 'https://c-prav.com/wp-content/uploads/2026/07/Final-PRODUCT-DESIGN-EMC-COMPLIANCE-WORKSHOP-BOOKLET-V4-1.pdf' }
+  ];
+
+  var CONTACT_EMAIL = 'sachin@c-prav.com';
+  // ---------------------------------
+
+  var form = document.getElementById('checkForm');
+  var statusEl = document.getElementById('status');
+  var submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('email').value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Checking…';
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+
+    var callbackName = 'handleCheck_' + Date.now();
+    window[callbackName] = function (data) {
+      cleanup();
+      if (data && data.approved) {
+        showApproved();
+      } else {
+        showDenied();
+      }
+    };
+
+    var script = document.createElement('script');
+    script.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&callback=' + callbackName;
+    script.onerror = function () {
+      cleanup();
+      statusEl.textContent = 'Something went wrong. Please try again.';
+      statusEl.className = 'status error';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continue';
+    };
+    document.body.appendChild(script);
+
+    function cleanup() {
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+  });
+
+  function showApproved() {
+    document.getElementById('formCard').style.display = 'none';
+    var listEl = document.getElementById('downloadList');
+    listEl.innerHTML = '';
+    PPT_FILES.forEach(function (file) {
+      var btn = document.createElement('a');
+      btn.href = file.url;
+      btn.textContent = file.label;
+      btn.setAttribute('download', '');
+      btn.style.display = 'block';
+      btn.style.textAlign = 'center';
+      btn.style.textDecoration = 'none';
+      btn.style.marginBottom = '12px';
+      btn.className = 'download-btn';
+      listEl.appendChild(btn);
+    });
+    document.getElementById('approvedCard').style.display = 'block';
+  }
+
+  function showDenied() {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('deniedMessage').innerHTML =
+      'You are not currently listed as an attendee of this workshop. ' +
+      'Please email <a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> to request the slides.';
+    document.getElementById('deniedCard').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
