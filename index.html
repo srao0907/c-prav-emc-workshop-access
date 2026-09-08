@@ -24,9 +24,24 @@
     color: var(--ink);
     font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     padding: 40px 24px;
+  }
+  .logo-wrap {
+    width: 100%;
+    max-width: min(760px, 92vw);
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+  }
+  .logo {
+    max-width: 110px;
+    width: 100%;
+    height: auto;
   }
   .card {
     width: 100%;
@@ -34,6 +49,7 @@
     border: 1px solid var(--line);
     padding: clamp(24px, 5vw, 56px) clamp(20px, 6vw, 56px);
     background: #fff;
+    text-align: center;
   }
   @media (max-width: 480px) {
     body { padding: 20px 12px; }
@@ -56,6 +72,7 @@
   .back-links {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
     margin-top: 24px;
   }
@@ -126,9 +143,14 @@
 </head>
 <body>
 
+  <div class="logo-wrap">
+    <img src="https://c-prav.com/wp-content/uploads/2026/09/business-logo-10-scaled.png" alt="C-PRAV logo" class="logo">
+    <img src="https://c-prav.com/wp-content/uploads/2026/09/WhatsApp-Image-2026-09-08-at-16.48.38.jpeg" alt="EMC Fest 2026 logo" class="logo">
+  </div>
+
   <div class="card" id="formCard">
     <h1>Access Your Workshop Slides</h1>
-    <p class="sub">Thank you for participating in the Premium Product Design & EMC Compliance Workshop.
+    <p class="sub">Thank you for participating in the Premium Product Design & EMC Compliance Workshop, held in Bangalore from 31 August to 4 September 2026.
       Please enter the name and email address you registered with to access the workshop presentation slides.</p>
 
     <form id="checkForm">
@@ -170,16 +192,7 @@
 
   // Add one entry per PowerPoint file. label is what shows on the button.
   var PPT_FILES = [
-    { label: 'Implementation of Numerical Simulation Activities in Automotive Development Processes', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_Bosch_Visit_1stSept26_DrMarco_presentation_Implementation_of_Numerical_Simulation_Activities_in_Automotive_Development_-Processes.pdf' },
-    { label: 'PRACTICAL ELECTRONIC DESIGN & EMC COMPLIANCE TECHNIQUES', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_CLAUS_Medical-Session6and9.pdf' },
-    { label: 'Demystifying_Grounding', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_DrMin_Demystifying_Grounding-2.pdf' },
-    { label: 'Demystifying_Shielding', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_DrMin_Demystifying_Shielding.pdf' },
-    { label: 'Medical 3rdParty Systems- Keith Armstrong', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Keith_Medical-3rdParty-Systems-2slidesperpage.pdf' },
-    { label: 'The Financial Benefits of Good EM Engineering', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Keith_The_Financial_Benefits_of_Good_EM_Engineering-2slidesperpage.pdf' },
-    { label: 'Numerical Simulation for EMC Design', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_MARCO_Numerical_Simulation_for_EMC_Design-LTspice.pdf' },
-    { label: 'C-PRAV: Pitfalls of EMC Snags & Solutions', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Praveen_Pitfalls_of_EMCandSS.pdf' },
-    { label: 'C-PRAV: Standards, Regulations, Testing, Certifications', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Praveen_SRTC.pdf' }
-
+    { label: 'Download Workshop Presentations', url: 'https://c-prav.com/wp-content/uploads/2026/09/EMC_FEST_Presentations.zip' },
   ];
 
   var CONTACT_EMAIL = 'sachin@c-prav.com';
