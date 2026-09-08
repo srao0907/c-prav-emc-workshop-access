@@ -9,30 +9,36 @@
     --ink: #1b1b1b;
     --paper: #faf9f6;
     --line: #d8d5cd;
-    --accent: #2f5d50;
-    --accent-hover: #24473d;
+    --accent: #133b64;
+    --accent-hover: #0e2c4c;
     --error: #a3372f;
   }
   * { box-sizing: border-box; }
   html, body {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
+    overflow-x: hidden;
   }
   body {
     background: var(--paper);
     color: var(--ink);
     font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 24px;
+    padding: 40px 24px;
   }
   .card {
     width: 100%;
-    max-width: 420px;
+    max-width: min(760px, 92vw);
     border: 1px solid var(--line);
-    padding: 40px 36px;
+    padding: clamp(24px, 5vw, 56px) clamp(20px, 6vw, 56px);
     background: #fff;
+  }
+  @media (max-width: 480px) {
+    body { padding: 20px 12px; }
+    h1 { font-size: 1.25rem; }
+    .download-btn { padding: 14px 16px !important; font-size: 0.9rem; }
   }
   h1 {
     font-size: 1.5rem;
@@ -46,6 +52,23 @@
     font-size: 0.95rem;
     line-height: 1.5;
   }
+
+  .back-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .back-links a {
+    font-size: 0.85rem;
+    color: #7a776d;
+    text-decoration: none;
+  }
+  .back-links a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
   label {
     display: block;
     font-size: 0.85rem;
@@ -91,7 +114,7 @@
   }
   .status.error { color: var(--error); }
   .download-btn {
-    padding: 12px;
+    padding: 16px 20px;
     background: var(--accent);
     color: #fff !important;
     border-radius: 2px;
@@ -104,8 +127,9 @@
 <body>
 
   <div class="card" id="formCard">
-    <h1>Confirm your access</h1>
-    <p class="sub">Enter your name and email to continue.</p>
+    <h1>Access Your Workshop Slides</h1>
+    <p class="sub">Thank you for participating in the Premium Product Design & EMC Compliance Workshop, held in Bangalore from 31 August to 4 September 2026.
+      Please enter the name and email address you registered with to access the workshop presentation slides.</p>
 
     <form id="checkForm">
       <label for="name">Name</label>
@@ -120,18 +144,24 @@
   </div>
 
   <div class="card" id="approvedCard" style="display:none;">
-    <h1>You're all set</h1>
-    <p class="sub">Thanks for confirming — here are the workshop slides.</p>
+    <h1>Your Workshop Materials Are Ready</h1>
+    <p class="sub">Thank you for attending the Premium Product Design & EMC Compliance Workshop. Your access has been confirmed. You can download the workshop presentation slides below.</p>
+    <label style="display:block; margin-top:8px; margin-bottom:12px;">Workshop Slides</label>
     <div id="downloadList"></div>
-    <a href="https://c-prav.com/product-design-emc-compliance-workshop-summary/" class="back-link">← Back to event page</a>
-
+    <p class="sub" style="margin-top:24px;">We hope the sessions and practical insights from the five-day programme continue to be a valuable resource for your work in product design, EMC, and compliance.</p>
+    <div class="back-links">
+      <a href="#" class="back-to-form">Try a different email</a>
+      <a href="https://c-prav.com/product-design-emc-compliance-workshop-summary/" class="back-link">Back to Event Recap</a>
+    </div>
   </div>
 
   <div class="card" id="deniedCard" style="display:none;">
-    <h1>We couldn't find you on the list</h1>
+    <h1>We Couldn't Verify Your Attendance</h1>
     <p class="sub" id="deniedMessage"></p>
-    <a href="https://c-prav.com/product-design-emc-compliance-workshop-summary/" class="back-link">← Back to event page</a>
-
+    <div class="back-links">
+      <a href="#" class="back-to-form">Try a different email</a>
+      <a href="https://c-prav.com/product-design-emc-compliance-workshop-summary/" class="back-link">Back to Event Recap</a>
+    </div>
   </div>
 
 <script>
@@ -140,7 +170,16 @@
 
   // Add one entry per PowerPoint file. label is what shows on the button.
   var PPT_FILES = [
-    { label: 'Download Workshop Slides — Part 1', url: 'https://c-prav.com/wp-content/uploads/2026/07/India_Product-Design-EMC_Fest-Training_Speaker_Profiles_2026-U.pdf' },
+    { label: 'Implementation of Numerical Simulation Activities in Automotive Development Processes', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_Bosch_Visit_1stSept26_DrMarco_presentation_Implementation_of_Numerical_Simulation_Activities_in_Automotive_Development_-Processes.pdf' },
+    { label: 'PRACTICAL ELECTRONIC DESIGN & EMC COMPLIANCE TECHNIQUES', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_CLAUS_Medical-Session6and9.pdf' },
+    { label: 'Demystifying_Grounding', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_DrMin_Demystifying_Grounding-2.pdf' },
+    { label: 'Demystifying_Shielding', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_DrMin_Demystifying_Shielding.pdf' },
+    { label: 'Medical 3rdParty Systems- Keith Armstrong', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Keith_Medical-3rdParty-Systems-2slidesperpage.pdf' },
+    { label: 'The Financial Benefits of Good EM Engineering', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Keith_The_Financial_Benefits_of_Good_EM_Engineering-2slidesperpage.pdf' },
+    { label: 'Numerical Simulation for EMC Design', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_MARCO_Numerical_Simulation_for_EMC_Design-LTspice.pdf' },
+    { label: 'C-PRAV: Pitfalls of EMC Snags & Solutions', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Praveen_Pitfalls_of_EMCandSS.pdf' },
+    { label: 'C-PRAV: Standards, Regulations, Testing, Certifications', url: 'https://c-prav.com/wp-content/uploads/2026/09/C-PRAV_EMC_FEST_2026_Praveen_SRTC.pdf' }
+
   ];
 
   var CONTACT_EMAIL = 'sachin@c-prav.com';
@@ -198,7 +237,7 @@
       btn.style.display = 'block';
       btn.style.textAlign = 'center';
       btn.style.textDecoration = 'none';
-      btn.style.marginBottom = '12px';
+      btn.style.marginBottom = '14px';
       btn.className = 'download-btn';
       listEl.appendChild(btn);
     });
@@ -208,10 +247,24 @@
   function showDenied() {
     document.getElementById('formCard').style.display = 'none';
     document.getElementById('deniedMessage').innerHTML =
-      'You are not currently listed as an attendee of this workshop. ' +
-      'Please email <a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> to request the slides.';
+      'We couldn\'t find your email address on the registered attendee list for the Premium Product Design & EMC Compliance Workshop. ' +
+      'Workshop slides are available exclusively to registered participants. If you attended the workshop but are unable to access the slides, please contact ' +
+      '<a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> for assistance.';
     document.getElementById('deniedCard').style.display = 'block';
   }
+
+  document.querySelectorAll('.back-to-form').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('approvedCard').style.display = 'none';
+      document.getElementById('deniedCard').style.display = 'none';
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continue';
+      });
+    });
 </script>
 
 </body>
