@@ -211,7 +211,7 @@
   </div>
 
   <div class="card" id="deniedCard" style="display:none;">
-    <h1>We Couldn't Verify Your Attendance</h1>
+    <h1 id="deniedHeading">We Couldn't Verify Your Attendance</h1>
     <p class="sub" id="deniedMessage"></p>
     <div class="back-links">
       <a href="https://c-prav.com/product-design-emc-compliance-workshop-summary/" class="back-link">Back to Event Recap</a>
@@ -256,8 +256,10 @@
     var callbackName = 'handleCheck_' + Date.now();
     window[callbackName] = function (data) {
       cleanup();
-      if (data && data.approved) {
+      if (data && data.status === 'approved') {
         showApproved();
+      } else if (data && data.status === 'used') {
+        showAlreadyUsed();
       } else {
         showDenied();
       }
@@ -301,9 +303,20 @@
 
   function showDenied() {
     document.getElementById('formCard').style.display = 'none';
+    document.getElementById('deniedHeading').textContent = "We Couldn't Verify Your Attendance";
     document.getElementById('deniedMessage').innerHTML =
       'We couldn\'t find your email address on the registered attendee list for the Premium Product Design & EMC Compliance Workshop. ' +
       'If you attended the workshop but are unable to access the slides, or if you were not registered but would like to request access, please contact ' +
+      '<a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> for assistance.';
+    document.getElementById('deniedCard').style.display = 'block';
+  }
+
+  function showAlreadyUsed() {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('deniedHeading').textContent = "You've Already Downloaded These Slides";
+    document.getElementById('deniedMessage').innerHTML =
+      'Our records show the workshop slides have already been downloaded using this email address. ' +
+      'If you need them again, please contact ' +
       '<a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> for assistance.';
     document.getElementById('deniedCard').style.display = 'block';
   }
