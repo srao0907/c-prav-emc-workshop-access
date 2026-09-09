@@ -233,7 +233,7 @@
 
   // Add one entry per PowerPoint file. label is what shows on the button.
   var PPT_FILES = [
-{ label: 'Download Workshop Presentations', url: 'https://c-prav.com/wp-content/uploads/2026/09/EMC_FEST_Presentations-FINAL-.zip' }
+{ label: 'Download Workshop Presentations', url: 'https://c-prav.com/wp-content/uploads/2026/09/1_EMC_FEST_Presentations.zip' }
   ];
 
   var CONTACT_EMAIL = 'sachin@c-prav.com';
@@ -242,6 +242,50 @@
   var form = document.getElementById('checkForm');
   var statusEl = document.getElementById('status');
   var submitBtn = document.getElementById('submitBtn');
+
+  function checkAccess(email, name) {
+    var query = '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name);
+
+    // Primary method: standard fetch. Works in the vast majority of
+    // browsers/networks and isn't affected by ad-blockers or privacy
+    // protections that can interfere with cross-domain <script> loading.
+    return fetch(SCRIPT_URL + query)
+      .then(function (res) {
+        if (!res.ok) throw new Error('fetch not ok');
+        return res.json();
+      })
+      .catch(function () {
+        // Fallback method: JSONP via a <script> tag, for the rare
+        // browser/network combo where the fetch above gets blocked.
+        return new Promise(function (resolve, reject) {
+          var callbackName = 'handleCheck_' + Date.now();
+          var timeoutId = setTimeout(function () {
+            cleanup();
+            reject(new Error('timeout'));
+          }, 10000);
+
+          window[callbackName] = function (data) {
+            clearTimeout(timeoutId);
+            cleanup();
+            resolve(data);
+          };
+
+          var script = document.createElement('script');
+          script.src = SCRIPT_URL + query + '&callback=' + callbackName;
+          script.onerror = function () {
+            clearTimeout(timeoutId);
+            cleanup();
+            reject(new Error('script load failed'));
+          };
+          document.body.appendChild(script);
+
+          function cleanup() {
+            delete window[callbackName];
+            if (script.parentNode) script.parentNode.removeChild(script);
+          }
+        });
+      });
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -253,33 +297,27 @@
     statusEl.textContent = '';
     statusEl.className = 'status';
 
-    var callbackName = 'handleCheck_' + Date.now();
-    window[callbackName] = function (data) {
-      cleanup();
-      if (data && data.status === 'approved') {
-        showApproved();
-      } else if (data && data.status === 'used') {
-        showAlreadyUsed();
-      } else {
-        showDenied();
-      }
-    };
-
-    var script = document.createElement('script');
-    script.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) + '&callback=' + callbackName;
-    script.onerror = function () {
-      cleanup();
-      statusEl.textContent = 'Something went wrong. Please try again.';
-      statusEl.className = 'status error';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Continue';
-    };
-    document.body.appendChild(script);
-
-    function cleanup() {
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
+    checkAccess(email, name)
+      .then(function (data) {
+        if (data && data.status === 'approved') {
+          showApproved();
+        } else if (data && data.status === 'used') {
+          showAlreadyUsed();
+        } else if (data && data.status === 'error') {
+          statusEl.textContent = 'Something went wrong on our end. Please try again in a moment.';
+          statusEl.className = 'status error';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Continue';
+        } else {
+          showDenied();
+        }
+      })
+      .catch(function () {
+        statusEl.textContent = 'Something went wrong. Please try again.';
+        statusEl.className = 'status error';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Continue';
+      });
   });
 
   function showApproved() {
